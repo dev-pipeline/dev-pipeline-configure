@@ -16,7 +16,7 @@ setup(
 
     entry_points={
         'devpipeline.drivers': [
-            'configure = devpipeline_configure.configure:main'
+            'configure = devpipeline_configure.configure:_CONFIGURE_COMMAND'
         ]
     },
 

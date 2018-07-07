@@ -66,5 +66,7 @@ def main(args=None):
     devpipeline_core.command.execute_command(configure, args)
 
 
+_CONFIGURE_COMMAND = (main, "Configure a project bulid directory.")
+
 if __name__ == '__main__':
     main()
