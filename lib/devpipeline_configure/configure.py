@@ -5,7 +5,7 @@ import devpipeline_core.command
 import devpipeline_core.config.config
 
 
-class Configure(devpipeline_core.command.GenericTool):
+class Configure(devpipeline_core.command.Command):
 
     """This class manages the configuration of the project."""
 
@@ -63,7 +63,7 @@ class Configure(devpipeline_core.command.GenericTool):
 def main(args=None):
     # pylint: disable=missing-docstring
     configure = Configure()
-    devpipeline_core.command.execute_tool(configure, args)
+    devpipeline_core.command.execute_command(configure, args)
 
 
 if __name__ == '__main__':
