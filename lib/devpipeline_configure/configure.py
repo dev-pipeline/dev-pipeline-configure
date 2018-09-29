@@ -4,11 +4,7 @@
 import devpipeline_core.command
 import devpipeline_core.config.config
 
-_MAJOR = 0
-_MINOR = 2
-_PATCH = 0
 
-_STRING = "{}.{}.{}".format(_MAJOR, _MINOR, _PATCH)
 
 
 class Configure(devpipeline_core.command.Command):
@@ -35,7 +31,7 @@ class Configure(devpipeline_core.command.Command):
         self.add_argument("--build-dir-basename",
                           help="Basename for build directory configuration",
                           default="build")
-        self.set_version(_STRING)
+        self.set_version(devpipeline_configure.version.STRING)
 
         self.build_dir = None
         self.config = None
