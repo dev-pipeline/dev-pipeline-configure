@@ -2,9 +2,8 @@
 """This modules configures the build system - build cache, etc...."""
 
 import devpipeline_core.command
-import devpipeline_core.config.config
-
-
+import devpipeline_configure.config
+import devpipeline_configure.version
 
 
 class Configure(devpipeline_core.command.Command):
@@ -55,7 +54,7 @@ class Configure(devpipeline_core.command.Command):
             self.overrides = ""
 
     def process(self):
-        devpipeline_core.config.config.process_config(
+        devpipeline_configure.config.process_config(
             self.config,
             self.build_dir,
             "build.cache",
