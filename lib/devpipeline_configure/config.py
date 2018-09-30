@@ -6,6 +6,7 @@ import os.path
 import os
 
 import devpipeline_core.config.parser
+import devpipeline_configure.cache
 import devpipeline_configure.version
 
 
@@ -125,4 +126,4 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
     for modifier in _CONFIG_MODIFIERS:
         modifier(config, **kwargs)
     _write_config(config, cache_dir, cache_file)
-    return config
+    return devpipeline_configure.cache._CachedConfig(config)

@@ -124,4 +124,5 @@ def update_cache(force=False, cache_file=None):
                                       fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None))
+        return cache_config
     return _CachedConfig(cache_config)
