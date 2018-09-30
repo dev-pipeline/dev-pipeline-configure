@@ -46,6 +46,63 @@ def _is_outdated(cache_file, cache_config):
     return False
 
 
+class _CachedComponetKeys:
+    def __init__(self, component):
+        self._iter = iter(component)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self._iter)
+
+
+class _CachedComponent:
+    def __init__(self, component):
+        self._component = component
+
+    def __iter__(self):
+        return _CachedComponetKeys(self._component)
+
+    def get(self, key, fallback=None):
+        return self._component.get(key, fallback)
+
+    def get_list(self, key, fallback=[], split=','):
+        raw = self.get(key, None)
+        if raw:
+            return [value.strip() for value in raw.split(split)]
+        return fallback
+
+
+class _CachedComponentIterator:
+    def __init__(self, sections):
+        self._iter = iter(sections)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        component = next(self._iter)
+        return _CachedComponent(component)
+
+
+class _CachedConfig:
+    def __init__(self, config):
+        self._config = config
+
+    def components(self):
+        return self._config.sections()
+
+    def __iter__(self):
+        return _CachedComponentIterator(self._config.sections())
+
+    def __contains__(self, item):
+        return item in self._config
+
+    def get(self, component):
+        return _CachedComponent(self._config[component])
+
+
 def update_cache(force=False, cache_file=None):
     """
     Load a build cache, updating it if necessary.
@@ -67,4 +124,4 @@ def update_cache(force=False, cache_file=None):
                                       fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None))
-    return cache_config
+    return _CachedConfig(cache_config)
