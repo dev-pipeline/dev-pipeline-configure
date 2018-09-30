@@ -64,6 +64,9 @@ class _CachedComponent:
     def __iter__(self):
         return _CachedComponetKeys(self._component)
 
+    def name(self):
+        return self._component.name
+
     def get(self, key, fallback=None):
         return self._component.get(key, fallback)
 
