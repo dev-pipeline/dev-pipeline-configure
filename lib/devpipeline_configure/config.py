@@ -126,4 +126,5 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
     for modifier in _CONFIG_MODIFIERS:
         modifier(config, **kwargs)
     _write_config(config, cache_dir, cache_file)
-    return devpipeline_configure.cache._CachedConfig(config)
+    return devpipeline_configure.cache._CachedConfig(
+        config, os.path.join(cache_dir, cache_file))

@@ -58,8 +58,9 @@ class _CachedComponetKeys:
 
 
 class _CachedComponent:
-    def __init__(self, component):
+    def __init__(self, component, main_config):
         self._component = component
+        self._main_config = main_config
 
     def __iter__(self):
         return _CachedComponetKeys(self._component)
@@ -70,6 +71,11 @@ class _CachedComponent:
     def get(self, key, raw=False, fallback=None):
         return self._component.get(key, raw=raw, fallback=fallback)
 
+    def set(self, key, value):
+        if self._component.get(key) != value:
+            self._component[key] = value
+            self._main_config.dirty = True
+
     def get_list(self, key, fallback=None, split=','):
         fallback = fallback or []
         raw = self.get(key, None)
@@ -79,32 +85,40 @@ class _CachedComponent:
 
 
 class _CachedComponentIterator:
-    def __init__(self, sections):
+    def __init__(self, sections, main_config):
         self._iter = iter(sections)
+        self._main_config = main_config
 
     def __iter__(self):
         return self
 
     def __next__(self):
         component = next(self._iter)
-        return _CachedComponent(component)
+        return _CachedComponent(component, self._main_config)
 
 
 class _CachedConfig:
-    def __init__(self, config):
+    def __init__(self, config, cache_path):
         self._config = config
+        self._cache_path = cache_path
+        self.dirty = False
 
     def components(self):
         return self._config.sections()
 
     def __iter__(self):
-        return _CachedComponentIterator(self._config.sections())
+        return _CachedComponentIterator(self._config.sections(), self)
 
     def __contains__(self, item):
         return item in self._config
 
     def get(self, component):
-        return _CachedComponent(self._config[component])
+        return _CachedComponent(self._config[component], self)
+
+    def write(self):
+        if self.dirty:
+            with open(self._cache_path, 'w') as output_file:
+                self._config.write(output_file)
 
 
 def update_cache(force=False, cache_file=None):
@@ -129,4 +143,4 @@ def update_cache(force=False, cache_file=None):
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None))
         return cache_config
-    return _CachedConfig(cache_config)
+    return _CachedConfig(cache_config, cache_file)
