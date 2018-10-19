@@ -70,7 +70,8 @@ class _CachedComponent:
     def get(self, key, raw=False, fallback=None):
         return self._component.get(key, raw=raw, fallback=fallback)
 
-    def get_list(self, key, fallback=[], split=','):
+    def get_list(self, key, fallback=None, split=','):
+        fallback = fallback or []
         raw = self.get(key, None)
         if raw:
             return [value.strip() for value in raw.split(split)]
