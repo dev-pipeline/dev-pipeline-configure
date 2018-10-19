@@ -67,8 +67,8 @@ class _CachedComponent:
     def name(self):
         return self._component.name
 
-    def get(self, key, fallback=None):
-        return self._component.get(key, fallback)
+    def get(self, key, raw=False, fallback=None):
+        return self._component.get(key, raw=raw, fallback=fallback)
 
     def get_list(self, key, fallback=[], split=','):
         raw = self.get(key, None)
