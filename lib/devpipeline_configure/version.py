@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Version constants"""
+
 MAJOR = 0
 MINOR = 3
 PATCH = 0
