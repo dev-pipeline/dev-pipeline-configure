@@ -7,6 +7,17 @@ import devpipeline_configure.config
 import devpipeline_configure.version
 
 
+def _choose_build_dir(arguments):
+    if arguments.build_dir:
+        return arguments.build_dir
+    else:
+        if arguments.profile:
+            return "{}-{}".format(arguments.build_dir_basename,
+                                  arguments.profile)
+        else:
+            return arguments.build_dir_basename
+
+
 class Configure(devpipeline_core.command.Command):
 
     """This class manages the configuration of the project."""
@@ -39,20 +50,10 @@ class Configure(devpipeline_core.command.Command):
         self.profile = None
 
     def setup(self, arguments):
-        if arguments.build_dir:
-            self.build_dir = arguments.build_dir
-        else:
-            if arguments.profile:
-                self.build_dir = "{}-{}".format(
-                    arguments.build_dir_basename, arguments.profile)
-            else:
-                self.build_dir = arguments.build_dir_basename
+        self.build_dir = _choose_build_dir(arguments)
         self.profile = arguments.profile
         self.config = arguments.config
-        if arguments.override:
-            self.overrides = arguments.override
-        else:
-            self.overrides = ""
+        self.overrides = arguments.override
 
     def process(self):
         config = devpipeline_configure.config.process_config(
