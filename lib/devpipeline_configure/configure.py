@@ -10,12 +10,10 @@ import devpipeline_configure.version
 def _choose_build_dir(arguments):
     if arguments.build_dir:
         return arguments.build_dir
-    else:
-        if arguments.profile:
-            return "{}-{}".format(arguments.build_dir_basename,
-                                  arguments.profile)
-        else:
-            return arguments.build_dir_basename
+    if arguments.profile:
+        return "{}-{}".format(arguments.build_dir_basename,
+                              arguments.profile)
+    return arguments.build_dir_basename
 
 
 class Configure(devpipeline_core.command.Command):
