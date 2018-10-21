@@ -116,6 +116,9 @@ class _CachedComponent:
     def __iter__(self):
         return _CachedComponetKeys(self._component)
 
+    def __contains__(self, item):
+        return item in self._component
+
 
 class _CachedComponentIterator:
     # pylint: disable=too-few-public-methods
