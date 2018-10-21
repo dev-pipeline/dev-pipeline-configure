@@ -6,6 +6,7 @@ import os.path
 import os
 
 import devpipeline_core.config.parser
+import devpipeline_core.plugin
 import devpipeline_configure.cache
 import devpipeline_configure.version
 
@@ -43,35 +44,6 @@ def _add_default_options(config, state):
         config["DEFAULT"][key] = value
 
 
-def _make_src_dir(config, package_name):
-    src_path = None
-    if "src_path" in config:
-        src_path = config.get("src_path")
-        if os.path.isabs(src_path):
-            return src_path
-    if not src_path:
-        src_path = package_name
-    return os.path.join(config.get("dp.src_root"), src_path)
-
-
-_PACKAGE_OPTIONS = {
-    "dp.build_dir": lambda config, package_name: os.path.join(
-        config.get("dp.build_root"), package_name),
-    "dp.src_dir": _make_src_dir
-}
-
-
-def _add_package_options(config, package_name, state):
-    # pylint: disable=unused-argument
-    for key, option_fn in _PACKAGE_OPTIONS.items():
-        config[key] = option_fn(config, package_name)
-
-
-def _add_package_options_all(config, state):
-    for package in config.sections():
-        _add_package_options(config[package], package, state)
-
-
 def _create_cache(raw_path, cache_dir, cache_file):
     if _is_cache_dir_appropriate(cache_dir, cache_file):
         config = devpipeline_core.config.parser.read_config(raw_path)
@@ -83,7 +55,6 @@ def _create_cache(raw_path, cache_dir, cache_file):
         }
         root_state["dp.build_root"] = os.path.join(os.getcwd(), cache_dir)
         _add_default_options(config, root_state)
-        _add_package_options_all(config, root_state)
         return config
     raise Exception(
         "{} doesn't look like a dev-pipeline folder".format(cache_dir))
@@ -109,6 +80,15 @@ _CONFIG_MODIFIERS = [
                                        "dp.overrides", **kwargs)
 ]
 
+_COMPONENT_MODIFIERS = devpipeline_core.plugin.query_plugins(
+    'devpipeline.config_modifiers')
+
+
+def _add_package_options(cache):
+    for name, mod_fn in _COMPONENT_MODIFIERS.items():
+        del name
+        mod_fn(cache)
+
 
 def process_config(raw_path, cache_dir, cache_file, **kwargs):
     """
@@ -125,7 +105,9 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
     config = _create_cache(raw_path, cache_dir, cache_file)
     for modifier in _CONFIG_MODIFIERS:
         modifier(config, **kwargs)
-    _write_config(config, cache_dir, cache_file)
     # pylint: disable=protected-access
-    return devpipeline_configure.cache._CachedConfig(
+    cache = devpipeline_configure.cache._CachedConfig(
         config, os.path.join(cache_dir, cache_file))
+    _add_package_options(cache)
+    cache.write()
+    return cache
