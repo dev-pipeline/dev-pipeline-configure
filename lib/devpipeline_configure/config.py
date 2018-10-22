@@ -60,11 +60,10 @@ def _create_cache(raw_path, cache_dir, cache_file):
         "{} doesn't look like a dev-pipeline folder".format(cache_dir))
 
 
-def _write_config(config, cache_dir, cache_file):
+def _write_config(config, cache_dir):
     if not os.path.isdir(cache_dir):
         os.makedirs(cache_dir)
-    with open(os.path.join(cache_dir, cache_file), 'w') as output_file:
-        config.write(output_file)
+    config.write()
 
 
 def _set_list(config, kwargs_key, config_key, **kwargs):
@@ -109,5 +108,5 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
     cache = devpipeline_configure.cache._CachedConfig(
         config, os.path.join(cache_dir, cache_file))
     _add_package_options(cache)
-    cache.write()
+    _write_config(cache, cache_dir)
     return cache
