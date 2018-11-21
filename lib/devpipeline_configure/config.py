@@ -8,6 +8,7 @@ import os
 import devpipeline_core.config.parser
 import devpipeline_core.plugin
 import devpipeline_configure.cache
+import devpipeline_configure.packages
 import devpipeline_configure.version
 
 
@@ -44,6 +45,24 @@ def _add_default_options(config, state):
         config["DEFAULT"][key] = value
 
 
+def _apply_import(section_config, import_config):
+    for key in import_config:
+        if key not in section_config:
+            section_config[key] = import_config.get(key, raw=True)
+
+
+def _handle_imports(config):
+    for section in config.sections():
+        section_config = config[section]
+        import_info = devpipeline_configure.packages.get_package_info(
+            section_config)
+        if import_info:
+            _apply_import(
+                section_config,
+                devpipeline_configure.packages.get_package_config(
+                    *import_info))
+
+
 def _create_cache(raw_path, cache_dir, cache_file):
     if _is_cache_dir_appropriate(cache_dir, cache_file):
         config = devpipeline_core.config.parser.read_config(raw_path)
@@ -55,6 +74,7 @@ def _create_cache(raw_path, cache_dir, cache_file):
         }
         root_state["dp.build_root"] = os.path.join(os.getcwd(), cache_dir)
         _add_default_options(config, root_state)
+        _handle_imports(config)
         return config
     raise Exception(
         "{} doesn't look like a dev-pipeline folder".format(cache_dir))
