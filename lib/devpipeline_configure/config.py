@@ -61,6 +61,8 @@ def _handle_imports(config):
                 section_config,
                 devpipeline_configure.packages.get_package_config(
                     *import_info))
+            section_config["dp.import_name"] = import_info[0]
+            section_config["dp.import_version"] = import_info[1]
 
 
 def _create_cache(raw_path, cache_dir, cache_file):
