@@ -119,6 +119,12 @@ class _CachedComponent:
     def __contains__(self, item):
         return item in self._component
 
+    def __delitem__(self, key):
+        del self._component[key]
+
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
 
 class _CachedComponentIterator:
     # pylint: disable=too-few-public-methods

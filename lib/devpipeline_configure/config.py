@@ -6,9 +6,11 @@ import os.path
 import os
 
 import devpipeline_core.config.parser
+import devpipeline_core.config.paths
 import devpipeline_core.plugin
 import devpipeline_configure.cache
 import devpipeline_configure.packages
+import devpipeline_configure.profiles
 import devpipeline_configure.version
 
 
@@ -111,6 +113,16 @@ def _add_package_options(cache):
         mod_fn(cache)
 
 
+_VALUE_MODIFIERS = [
+    devpipeline_configure.profiles.apply_profiles
+]
+
+
+def _handle_value_modifiers(config):
+    for modifier_fn in _VALUE_MODIFIERS:
+        modifier_fn(config)
+
+
 def process_config(raw_path, cache_dir, cache_file, **kwargs):
     """
     Read a build configuration and create it, storing the result in a build
@@ -129,6 +141,7 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
     # pylint: disable=protected-access
     cache = devpipeline_configure.cache._CachedConfig(
         config, os.path.join(cache_dir, cache_file))
+    _handle_value_modifiers(cache)
     _add_package_options(cache)
     _write_config(cache, cache_dir)
     return cache
