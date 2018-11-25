@@ -9,6 +9,7 @@ import devpipeline_core.config.parser
 import devpipeline_core.config.paths
 import devpipeline_core.plugin
 import devpipeline_configure.cache
+import devpipeline_configure.local
 import devpipeline_configure.packages
 import devpipeline_configure.profiles
 import devpipeline_configure.overrides
@@ -115,6 +116,7 @@ def _add_package_options(cache):
 
 
 _VALUE_MODIFIERS = [
+    devpipeline_configure.local.consolidate_local_keys,
     devpipeline_configure.profiles.apply_profiles,
     devpipeline_configure.overrides.apply_overrides
 ]
