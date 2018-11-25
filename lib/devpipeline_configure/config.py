@@ -11,6 +11,7 @@ import devpipeline_core.plugin
 import devpipeline_configure.cache
 import devpipeline_configure.packages
 import devpipeline_configure.profiles
+import devpipeline_configure.overrides
 import devpipeline_configure.version
 
 
@@ -114,7 +115,8 @@ def _add_package_options(cache):
 
 
 _VALUE_MODIFIERS = [
-    devpipeline_configure.profiles.apply_profiles
+    devpipeline_configure.profiles.apply_profiles,
+    devpipeline_configure.overrides.apply_overrides
 ]
 
 
