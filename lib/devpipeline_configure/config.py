@@ -115,10 +115,22 @@ def _add_package_options(cache):
         mod_fn(cache)
 
 
+def _consolidate_envs(cache):
+    for component in cache.components():
+        component_config = cache.get(component)
+        env_list = component_config.get_list("dp.env_list")
+        if env_list:
+            env_dict = {}
+            for env in env_list:
+                env_dict[env] = None
+            component_config.set("dp.env_list", ",".join(env_dict.keys()))
+
+
 _VALUE_MODIFIERS = [
     devpipeline_configure.local.consolidate_local_keys,
     devpipeline_configure.profiles.apply_profiles,
-    devpipeline_configure.overrides.apply_overrides
+    devpipeline_configure.overrides.apply_overrides,
+    _consolidate_envs
 ]
 
 

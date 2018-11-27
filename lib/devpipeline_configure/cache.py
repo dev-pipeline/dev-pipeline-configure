@@ -109,7 +109,7 @@ class _CachedComponent:
         key - the key to set
         value - the new value
         """
-        if self._component.get(key) != value:
+        if self._component.get(key, raw=True) != value:
             self._component[key] = value
             self._main_config.dirty = True
 
