@@ -5,12 +5,12 @@
 import os.path
 import os
 
-import devpipeline_core.config.parser
-import devpipeline_core.config.paths
+import devpipeline_core.paths
 import devpipeline_core.plugin
 import devpipeline_configure.cache
 import devpipeline_configure.local
 import devpipeline_configure.packages
+import devpipeline_configure.parser
 import devpipeline_configure.profiles
 import devpipeline_configure.overrides
 import devpipeline_configure.version
@@ -64,19 +64,20 @@ def _handle_imports(config):
             _apply_import(
                 section_config,
                 devpipeline_configure.packages.get_package_config(
-                    *import_info))
+                    section_config, *import_info))
             section_config["dp.import_name"] = import_info[0]
             section_config["dp.import_version"] = import_info[1]
 
 
 def _create_cache(raw_path, cache_dir, cache_file):
     if _is_cache_dir_appropriate(cache_dir, cache_file):
-        config = devpipeline_core.config.parser.read_config(raw_path)
+        config = devpipeline_configure.parser.read_config(raw_path)
         abs_path = os.path.abspath(raw_path)
         root_state = {
             "dp.build_config": abs_path,
             "dp.src_root": os.path.dirname(abs_path),
-            "dp.version": format(devpipeline_configure.version.ID, "02x")
+            "dp.version": format(devpipeline_configure.version.ID, "02x"),
+            "dp.config_dir": os.path.join(os.path.expanduser("~"), ".dev-pipeline.d")
         }
         root_state["dp.build_root"] = os.path.join(os.getcwd(), cache_dir)
         _add_default_options(config, root_state)

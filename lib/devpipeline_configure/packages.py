@@ -2,8 +2,8 @@
 
 import os.path
 
-import devpipeline_core.config.parser
-import devpipeline_core.config.paths
+import devpipeline_core.paths
+import devpipeline_configure.parser
 
 
 def get_package_info(config):
@@ -16,17 +16,14 @@ def get_package_info(config):
     return None
 
 
-def _get_packages_root():
-    return devpipeline_core.config.paths._make_path(None, "packages.d")
+def _get_package_path(config, package_name):
+    return devpipeline_core.paths.make_path(
+        config, "packages.d", package_name, "versions.conf")
 
 
-def _get_package_path(base_dir, package_name):
-    return os.path.join(base_dir, package_name, "versions.conf")
-
-
-def get_package_config(package_name, version):
-    package_path = _get_package_path(_get_packages_root(), package_name)
-    package_config = devpipeline_core.config.parser.read_config(package_path)
+def get_package_config(component_config, package_name, version):
+    package_path = _get_package_path(component_config, package_name)
+    package_config = devpipeline_configure.parser.read_config(package_path)
     if package_config:
         if version in package_config:
             return package_config[version]

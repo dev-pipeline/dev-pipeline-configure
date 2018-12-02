@@ -4,8 +4,8 @@
 
 import os.path
 
-import devpipeline_core.config.parser
-import devpipeline_core.config.sanitizer
+import devpipeline_configure.parser
+import devpipeline_core.sanitizer
 
 import devpipeline_configure.config
 
@@ -179,7 +179,7 @@ def update_cache(force=False, cache_file=None):
     """
     if not cache_file:
         cache_file = _find_config()
-    cache_config = devpipeline_core.config.parser.read_config(cache_file)
+    cache_config = devpipeline_configure.parser.read_config(cache_file)
     if force or _is_outdated(cache_file, cache_config):
         cache_config = devpipeline_configure.config.process_config(
             cache_config.get("DEFAULT", "dp.build_config"),
@@ -188,7 +188,7 @@ def update_cache(force=False, cache_file=None):
                                       fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None))
-        devpipeline_core.config.sanitizer.sanitize(
+        devpipeline_core.sanitizer.sanitize(
             cache_config, lambda n, m: print("{} [{}]".format(m, n)))
         return cache_config
     return _CachedConfig(cache_config, cache_file)

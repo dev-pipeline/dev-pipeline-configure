@@ -3,15 +3,17 @@
 import os.path
 import re
 
-import devpipeline_core.config.parser
-import devpipeline_core.config.paths
+import devpipeline_core.paths
+import devpipeline_configure.parser
 
 import devpipeline_configure.modifiers
 
 
-def _read_profiles(path):
+def _read_profiles(configuration):
+    path = devpipeline_core.paths.make_path(
+        configuration.get("DEFAULT"), "profiles.conf")
     if os.path.isfile(path):
-        return devpipeline_core.config.parser.read_config(path)
+        return devpipeline_configure.parser.read_config(path)
     raise Exception("Unable to load profile file ({})".format(path))
 
 
@@ -40,12 +42,8 @@ def _apply_each_profile(profiles, profile_list, config):
                             component_config, m.group(1), profile_value)
 
 
-_PROFILES_PATH = devpipeline_core.config.paths._make_path(
-    None, "profiles.conf")
-
-
 def apply_profiles(config):
     profile_list = config.get("DEFAULT").get_list("dp.profile_name")
     if profile_list:
-        profiles = _read_profiles(_PROFILES_PATH)
+        profiles = _read_profiles(config)
         _apply_each_profile(profiles, profile_list, config)

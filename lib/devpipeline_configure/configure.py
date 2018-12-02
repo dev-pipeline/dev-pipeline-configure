@@ -2,7 +2,6 @@
 """This modules configures the build system - build cache, etc...."""
 
 import devpipeline_core.command
-import devpipeline_core.config.sanitizer
 import devpipeline_configure.config
 import devpipeline_configure.version
 
@@ -60,7 +59,7 @@ class Configure(devpipeline_core.command.Command):
             "build.cache",
             profiles=self.profile,
             overrides=self.overrides)
-        devpipeline_core.config.sanitizer.sanitize(
+        devpipeline_core.sanitizer.sanitize(
             config, lambda n, m: print("{} [{}]".format(m, n)))
 
 

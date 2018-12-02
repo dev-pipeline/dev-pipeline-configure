@@ -30,6 +30,7 @@ def consolidate_local_keys(config):
                             component_config, m.group(1), component_config.get(key, raw=True))
                         del_keys.append(key)
                     else:
-                        devpipeline_configure.modifiers.append_value(component_config, "dp.env_list", _ENV_VARIABLE.match(key).group(1))
+                        devpipeline_configure.modifiers.append_value(
+                            component_config, "dp.env_list", _ENV_VARIABLE.match(key).group(1))
         for del_key in del_keys:
             del component_config[del_key]

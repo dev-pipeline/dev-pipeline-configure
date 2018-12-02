@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 
-import os.path
+import devpipeline_core.paths
 
-import devpipeline_core.config.parser
-import devpipeline_core.config.paths
-
+import devpipeline_configure.parser
 import devpipeline_configure.modifiers
 
 
@@ -15,22 +13,21 @@ _SECTIONS = [
     ("erase", devpipeline_configure.modifiers.erase_value)
 ]
 
-_OVERRIDES_PATH = devpipeline_core.config.paths._make_path(
-    None, "overrides.d")
 
-
-def _get_override_path(override_name, package_name):
-    return os.path.join(_OVERRIDES_PATH, override_name,
-                        "{}.conf".format(package_name))
+def _get_override_path(config, override_name, package_name):
+    return devpipeline_core.paths.make_path(config, "overrides.d",
+                                            override_name,
+                                            "{}.conf".format(package_name))
 
 
 def _apply_override(override_name, config):
     for component in config.components():
-        override_path = _get_override_path(override_name, component)
+        component_config = config.get(component)
+        override_path = _get_override_path(
+            component_config, override_name, component)
         if os.path.isfile(override_path):
-            override_config = devpipeline_core.config.parser.read_config(
+            override_config = devpipeline_configure.parser.read_config(
                 override_path)
-            component_config = config.get(component)
             for override_section in _SECTIONS:
                 if override_config.has_section(override_section[0]):
                     for override_key, override_value in override_config[override_section[0]].items(

@@ -21,6 +21,7 @@ def _erase_helper(config, key):
     if key in config:
         del config[key]
 
+
 _ENV_PATTERN = re.compile(R"^env\.")
 
 
