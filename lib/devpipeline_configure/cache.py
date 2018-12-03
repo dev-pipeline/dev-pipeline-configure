@@ -122,6 +122,9 @@ class _CachedComponent:
     def __delitem__(self, key):
         del self._component[key]
 
+    def __getitem__(self, key):
+        return self.get(key)
+
     def __setitem__(self, key, value):
         self.set(key, value)
 
@@ -137,7 +140,7 @@ class _CachedComponentIterator:
 
     def __next__(self):
         component = next(self._iter)
-        return _CachedComponent(component, self._main_config)
+        return (component, self._main_config.get(component))
 
 
 class _CachedConfig:
@@ -146,9 +149,12 @@ class _CachedConfig:
         self._cache_path = cache_path
         self.dirty = False
 
-    def components(self):
+    def keys(self):
         """Get a list of component names provided by a configuration."""
         return self._config.sections()
+
+    def items(self):
+        return _CachedComponentIterator(self._config.sections(), self)
 
     def get(self, component):
         """Get a specific component to operate on"""
@@ -161,7 +167,7 @@ class _CachedConfig:
                 self._config.write(output_file)
 
     def __iter__(self):
-        return _CachedComponentIterator(self._config.sections(), self)
+        return iter(self._config)
 
     def __contains__(self, item):
         return item in self._config

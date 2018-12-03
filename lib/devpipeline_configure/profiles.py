@@ -32,14 +32,14 @@ _KEY_SUFFIXES = [
 def _apply_each_profile(profiles, profile_list, config):
     for profile_name in profile_list:
         profile = profiles[profile_name]
-        for component in config.components():
-            component_config = config.get(component)
+        for name, component_config in config.items():
+            del name
             for profile_key, profile_value in profile.items():
                 for key_suffix in _KEY_SUFFIXES:
                     m = key_suffix[0].search(profile_key)
                     if m:
-                        key_suffix[1](
-                            component_config, m.group(1), profile_value)
+                        key_suffix[1](component_config, m.group(1),
+                                      profile_value)
 
 
 def apply_profiles(config):

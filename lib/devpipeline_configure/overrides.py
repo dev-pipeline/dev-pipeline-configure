@@ -21,19 +21,16 @@ def _get_override_path(config, override_name, package_name):
 
 
 def _apply_override(override_name, config):
-    for component in config.components():
-        component_config = config.get(component)
-        override_path = _get_override_path(
-            component_config, override_name, component)
+    for name, config in config.items():
+        override_path = _get_override_path(config, override_name, name)
         if os.path.isfile(override_path):
             override_config = devpipeline_configure.parser.read_config(
                 override_path)
             for override_section in _SECTIONS:
                 if override_config.has_section(override_section[0]):
-                    for override_key, override_value in override_config[override_section[0]].items(
-                    ):
-                        override_section[1](
-                            component_config, override_key, override_value)
+                    for override_key, override_value in override_config[override_section[0]].items():
+                        override_section[1](config, override_key,
+                                            override_value)
 
 
 def apply_overrides(config):

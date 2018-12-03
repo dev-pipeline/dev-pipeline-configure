@@ -117,14 +117,14 @@ def _add_package_options(cache):
 
 
 def _consolidate_envs(cache):
-    for component in cache.components():
-        component_config = cache.get(component)
-        env_list = component_config.get_list("dp.env_list")
+    for name, config in cache.items():
+        del name
+        env_list = config.get_list("dp.env_list")
         if env_list:
             env_dict = {}
             for env in env_list:
                 env_dict[env] = None
-            component_config.set("dp.env_list", ",".join(env_dict.keys()))
+            config.set("dp.env_list", ",".join(env_dict.keys()))
 
 
 _VALUE_MODIFIERS = [

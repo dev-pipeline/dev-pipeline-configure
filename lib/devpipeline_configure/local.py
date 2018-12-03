@@ -18,19 +18,18 @@ _ENV_VARIABLE = re.compile(R"env.(\w+)")
 
 
 def consolidate_local_keys(config):
-    for component in config.components():
-        component_config = config.get(component)
+    for name, config in config.items():
         del_keys = []
-        for key in component_config:
+        for key in config:
             for key_suffix in _KEY_SUFFIXES:
                 m = key_suffix[0].search(key)
                 if m:
                     if not _ENV_PATTERN.match(key):
                         key_suffix[1](
-                            component_config, m.group(1), component_config.get(key, raw=True))
+                            config, m.group(1), config.get(key, raw=True))
                         del_keys.append(key)
                     else:
                         devpipeline_configure.modifiers.append_value(
-                            component_config, "dp.env_list", _ENV_VARIABLE.match(key).group(1))
+                            config, "dp.env_list", _ENV_VARIABLE.match(key).group(1))
         for del_key in del_keys:
-            del component_config[del_key]
+            del config[del_key]
