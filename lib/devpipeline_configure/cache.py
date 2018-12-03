@@ -8,6 +8,7 @@ import devpipeline_core.sanitizer
 
 import devpipeline_configure.config
 import devpipeline_configure.overrides
+import devpipeline_configure.profiles
 import devpipeline_configure.parser
 
 
@@ -36,6 +37,16 @@ def _updated_software(config, cache_mtime):
     return devpipeline_configure.version.ID > int(config_version, 16)
 
 
+def _profiles_changed(config, cache_mtime):
+    default_config = config.get("DEFAULT")
+    if "dp.profile_name" in default_config:
+        profile_path = devpipeline_configure.profiles.get_profile_path(config)
+        if os.path.isfile(profile_path):
+            return cache_mtime < os.path.getmtime(profile_path)
+        return True
+    return False
+
+
 def _overrides_changed(config, cache_mtime):
     default_config = config.get("DEFAULT")
     override_list = default_config.get_list("dp.overrides")
@@ -61,6 +72,7 @@ def _overrides_changed(config, cache_mtime):
 _OUTDATED_CHECKS = [
     _raw_updated,
     _updated_software,
+    _profiles_changed,
     _overrides_changed
 ]
 

@@ -9,9 +9,13 @@ import devpipeline_configure.parser
 import devpipeline_configure.modifiers
 
 
+def get_profile_path(config):
+    return devpipeline_core.paths.make_path(
+        config.get("DEFAULT"), "profiles.conf")
+
+
 def _read_profiles(configuration):
-    path = devpipeline_core.paths.make_path(
-        configuration.get("DEFAULT"), "profiles.conf")
+    path = get_profile_path(configuration)
     if os.path.isfile(path):
         return devpipeline_configure.parser.read_config(path)
     raise Exception("Unable to load profile file ({})".format(path))
