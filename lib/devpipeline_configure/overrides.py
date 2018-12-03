@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import os.path
+
 import devpipeline_core.paths
 
 import devpipeline_configure.parser
@@ -14,7 +16,7 @@ _SECTIONS = [
 ]
 
 
-def _get_override_path(config, override_name, package_name):
+def get_override_path(config, override_name, package_name):
     return devpipeline_core.paths.make_path(config, "overrides.d",
                                             override_name,
                                             "{}.conf".format(package_name))
@@ -22,15 +24,19 @@ def _get_override_path(config, override_name, package_name):
 
 def _apply_override(override_name, config):
     for name, config in config.items():
-        override_path = _get_override_path(config, override_name, name)
+        applied_overrides = []
+        override_path = get_override_path(config, override_name, name)
         if os.path.isfile(override_path):
             override_config = devpipeline_configure.parser.read_config(
                 override_path)
+            applied_overrides.append(override_name)
             for override_section in _SECTIONS:
                 if override_config.has_section(override_section[0]):
                     for override_key, override_value in override_config[override_section[0]].items():
                         override_section[1](config, override_key,
                                             override_value)
+        if applied_overrides:
+            config.set("dp.applied_overrides", ",".join(applied_overrides))
 
 
 def apply_overrides(config):

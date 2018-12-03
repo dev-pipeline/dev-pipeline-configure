@@ -4,10 +4,11 @@
 
 import os.path
 
-import devpipeline_configure.parser
 import devpipeline_core.sanitizer
 
 import devpipeline_configure.config
+import devpipeline_configure.overrides
+import devpipeline_configure.parser
 
 
 def _find_config():
@@ -25,19 +26,42 @@ def _find_config():
 
 
 def _raw_updated(config, cache_mtime):
-    raw_mtime = os.path.getmtime(config.get("DEFAULT", "dp.build_config"))
+    raw_mtime = os.path.getmtime(config.get("DEFAULT").get("dp.build_config"))
     return cache_mtime < raw_mtime
 
 
 def _updated_software(config, cache_mtime):
     # pylint: disable=unused-argument
-    config_version = config.get("DEFAULT", "dp.version", fallback="0")
+    config_version = config.get("DEFAULT").get("dp.version", fallback="0")
     return devpipeline_configure.version.ID > int(config_version, 16)
+
+
+def _overrides_changed(config, cache_mtime):
+    default_config = config.get("DEFAULT")
+    override_list = default_config.get_list("dp.overrides")
+    for component_name, component_config in config.items():
+        applied_overrides = component_config.get_list("dp.applied_overrides")
+        # see if the applied overrides have been deleted
+        for override_name in override_list:
+            override_path = devpipeline_configure.overrides.get_override_path(component_config, override_name, component_name)
+            if override_name in applied_overrides:
+                if not os.path.isfile(override_path):
+                    # has it been removed?
+                    return True
+                raw_mtime = os.path.getmtime(override_path)
+                if cache_mtime < raw_mtime:
+                    # is it newer?
+                    return True
+            elif os.path.isfile(override_path):
+                # is it a new file?
+                return True
+    return False
 
 
 _OUTDATED_CHECKS = [
     _raw_updated,
-    _updated_software
+    _updated_software,
+    _overrides_changed
 ]
 
 
@@ -186,8 +210,9 @@ def update_cache(force=False, cache_file=None):
     if not cache_file:
         cache_file = _find_config()
     cache_config = devpipeline_configure.parser.read_config(cache_file)
-    if force or _is_outdated(cache_file, cache_config):
-        cache_config = devpipeline_configure.config.process_config(
+    cache = _CachedConfig(cache_config, cache_file)
+    if force or _is_outdated(cache_file, cache):
+        cache = devpipeline_configure.config.process_config(
             cache_config.get("DEFAULT", "dp.build_config"),
             os.path.dirname(cache_file), "build.cache",
             profiles=cache_config.get("DEFAULT", "dp.profile_name",
@@ -195,6 +220,5 @@ def update_cache(force=False, cache_file=None):
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None))
         devpipeline_core.sanitizer.sanitize(
-            cache_config, lambda n, m: print("{} [{}]".format(m, n)))
-        return cache_config
-    return _CachedConfig(cache_config, cache_file)
+            cache, lambda n, m: print("{} [{}]".format(m, n)))
+    return cache
