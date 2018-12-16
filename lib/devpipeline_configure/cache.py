@@ -102,6 +102,7 @@ class _CachedComponent:
         self._component = component
         self._main_config = main_config
 
+    @property
     def name(self):
         """Retrieve the component's name"""
         return self._component.name
