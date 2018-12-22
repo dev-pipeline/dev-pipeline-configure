@@ -25,23 +25,18 @@ def _erase_helper(config, key):
 _ENV_PATTERN = re.compile(R"^env\.")
 
 
-def append_value(config, key, value):
+def _append_prepend_helper(config, key, key_suffix, helper_fn, value):
     if _ENV_PATTERN.match(key):
-        key += ".append"
+        key = "{}.{}".format(key, key_suffix)
     _append_helper(config, key, value)
 
 
+def append_value(config, key, value):
+    _append_prepend_helper(config, key, "append", _append_helper, value)
+
+
 def prepend_value(config, key, value):
-    if _ENV_PATTERN.match(key):
-        key += ".prepend"
-    _prepend_helper(config, key, value)
-
-
-def override_value(config, key, value):
-    if _ENV_PATTERN.match(key):
-        _erase_helper(config, key + ".append")
-        _erase_helper(config, key + ".prepend")
-    config[key] = value
+    _append_prepend_helper(config, key, "prepend", _prepend_helper, value)
 
 
 def erase_value(config, key, value):
@@ -50,3 +45,8 @@ def erase_value(config, key, value):
         _erase_helper(config, key + ".append")
         _erase_helper(config, key + ".prepend")
     _erase_helper(config, key)
+
+
+def override_value(config, key, value):
+    erase_value(config, key, value)
+    config[key] = value

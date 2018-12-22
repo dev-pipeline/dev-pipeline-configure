@@ -33,17 +33,20 @@ _KEY_SUFFIXES = [
 ]
 
 
+def _apply_single_profile(component_config, profile):
+    for profile_key, profile_value in profile.items():
+        for key_suffix in _KEY_SUFFIXES:
+            match = key_suffix[0].search(profile_key)
+            if match:
+                key_suffix[1](component_config, match.group(1), profile_value)
+
+
 def _apply_each_profile(profiles, profile_list, config):
     for profile_name in profile_list:
         profile = profiles[profile_name]
         for name, component_config in config.items():
             del name
-            for profile_key, profile_value in profile.items():
-                for key_suffix in _KEY_SUFFIXES:
-                    match = key_suffix[0].search(profile_key)
-                    if match:
-                        key_suffix[1](component_config, match.group(1),
-                                      profile_value)
+            _apply_single_profile(component_config, profile)
 
 
 def apply_profiles(config):

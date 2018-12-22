@@ -22,19 +22,25 @@ def get_override_path(config, override_name, package_name):
                                             "{}.conf".format(package_name))
 
 
+def _apply_single_override(override_path, config):
+    if os.path.isfile(override_path):
+        override_config = devpipeline_configure.parser.read_config(
+            override_path)
+        for override_section in _SECTIONS:
+            if override_config.has_section(override_section[0]):
+                for override_key, override_value in override_config[override_section[0]].items():
+                    override_section[1](config, override_key,
+                                        override_value)
+        return True
+    return False
+
+
 def _apply_override(override_name, full_config):
     for name, config in full_config.items():
         applied_overrides = []
         override_path = get_override_path(config, override_name, name)
-        if os.path.isfile(override_path):
-            override_config = devpipeline_configure.parser.read_config(
-                override_path)
+        if _apply_single_override(override_path, config):
             applied_overrides.append(override_name)
-            for override_section in _SECTIONS:
-                if override_config.has_section(override_section[0]):
-                    for override_key, override_value in override_config[override_section[0]].items():
-                        override_section[1](config, override_key,
-                                            override_value)
         if applied_overrides:
             config.set("dp.applied_overrides", ",".join(applied_overrides))
 

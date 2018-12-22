@@ -47,6 +47,25 @@ def _profiles_changed(config, cache_mtime):
     return False
 
 
+def _check_specific_override(override_name, applied_overrides,
+                             component_config, component_name,
+                             cache_mtime):
+    override_path = devpipeline_configure.overrides.get_override_path(
+        component_config, override_name, component_name)
+    if override_name in applied_overrides:
+        if not os.path.isfile(override_path):
+            # has it been removed?
+            return True
+        raw_mtime = os.path.getmtime(override_path)
+        if cache_mtime < raw_mtime:
+            # is it newer?
+            return True
+    elif os.path.isfile(override_path):
+        # is it a new file?
+        return True
+    return False
+
+
 def _overrides_changed(config, cache_mtime):
     default_config = config.get("DEFAULT")
     override_list = default_config.get_list("dp.overrides")
@@ -54,18 +73,9 @@ def _overrides_changed(config, cache_mtime):
         applied_overrides = component_config.get_list("dp.applied_overrides")
         # see if the applied overrides have been deleted
         for override_name in override_list:
-            override_path = devpipeline_configure.overrides.get_override_path(
-                component_config, override_name, component_name)
-            if override_name in applied_overrides:
-                if not os.path.isfile(override_path):
-                    # has it been removed?
-                    return True
-                raw_mtime = os.path.getmtime(override_path)
-                if cache_mtime < raw_mtime:
-                    # is it newer?
-                    return True
-            elif os.path.isfile(override_path):
-                # is it a new file?
+            if _check_specific_override(override_name, applied_overrides,
+                                        component_config, component_name,
+                                        cache_mtime):
                 return True
     return False
 

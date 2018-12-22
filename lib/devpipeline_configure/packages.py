@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-import os.path
-
 import devpipeline_core.paths
 import devpipeline_configure.parser
 
