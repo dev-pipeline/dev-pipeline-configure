@@ -6,8 +6,7 @@ import configparser
 
 
 def _make_parser():
-    return configparser.ConfigParser(
-        interpolation=configparser.ExtendedInterpolation())
+    return configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 
 
 def read_config(path):

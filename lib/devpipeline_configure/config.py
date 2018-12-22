@@ -58,13 +58,14 @@ def _apply_import(section_config, import_config):
 def _handle_imports(config):
     for section in config.sections():
         section_config = config[section]
-        import_info = devpipeline_configure.packages.get_package_info(
-            section_config)
+        import_info = devpipeline_configure.packages.get_package_info(section_config)
         if import_info:
             _apply_import(
                 section_config,
                 devpipeline_configure.packages.get_package_config(
-                    section_config, *import_info))
+                    section_config, *import_info
+                ),
+            )
             section_config["dp.import_name"] = import_info[0]
             section_config["dp.import_version"] = import_info[1]
 
@@ -77,14 +78,13 @@ def _create_cache(raw_path, cache_dir, cache_file):
             "dp.build_config": abs_path,
             "dp.src_root": os.path.dirname(abs_path),
             "dp.version": format(devpipeline_configure.version.ID, "02x"),
-            "dp.config_dir": os.path.join(os.path.expanduser("~"), ".dev-pipeline.d")
+            "dp.config_dir": os.path.join(os.path.expanduser("~"), ".dev-pipeline.d"),
         }
         root_state["dp.build_root"] = os.path.join(os.getcwd(), cache_dir)
         _add_default_options(config, root_state)
         _handle_imports(config)
         return config
-    raise Exception(
-        "{} doesn't look like a dev-pipeline folder".format(cache_dir))
+    raise Exception("{} doesn't look like a dev-pipeline folder".format(cache_dir))
 
 
 def _write_config(config, cache_dir):
@@ -100,14 +100,13 @@ def _set_list(config, kwargs_key, config_key, **kwargs):
 
 
 _CONFIG_MODIFIERS = [
-    lambda config, **kwargs: _set_list(config, "profiles",
-                                       "dp.profile_name", **kwargs),
-    lambda config, **kwargs: _set_list(config, "overrides",
-                                       "dp.overrides", **kwargs)
+    lambda config, **kwargs: _set_list(config, "profiles", "dp.profile_name", **kwargs),
+    lambda config, **kwargs: _set_list(config, "overrides", "dp.overrides", **kwargs),
 ]
 
 _COMPONENT_MODIFIERS = devpipeline_core.plugin.query_plugins(
-    'devpipeline.config_modifiers')
+    "devpipeline.config_modifiers"
+)
 
 
 def _add_package_options(cache):
@@ -131,7 +130,7 @@ _VALUE_MODIFIERS = [
     devpipeline_configure.local.consolidate_local_keys,
     devpipeline_configure.profiles.apply_profiles,
     devpipeline_configure.overrides.apply_overrides,
-    _consolidate_envs
+    _consolidate_envs,
 ]
 
 
@@ -157,7 +156,8 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
         modifier(config, **kwargs)
     # pylint: disable=protected-access
     cache = devpipeline_configure.cache._CachedConfig(
-        config, os.path.join(cache_dir, cache_file))
+        config, os.path.join(cache_dir, cache_file)
+    )
     _handle_value_modifiers(cache)
     _add_package_options(cache)
     _write_config(cache, cache_dir)

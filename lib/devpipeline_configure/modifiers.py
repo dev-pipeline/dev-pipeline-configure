@@ -22,7 +22,7 @@ def _erase_helper(config, key):
         del config[key]
 
 
-_ENV_PATTERN = re.compile(R"^env\.")
+_ENV_PATTERN = re.compile(r"^env\.")
 
 
 def _append_prepend_helper(config, key, key_suffix, helper_fn, value):

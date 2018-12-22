@@ -47,11 +47,12 @@ def _profiles_changed(config, cache_mtime):
     return False
 
 
-def _check_specific_override(override_name, applied_overrides,
-                             component_config, component_name,
-                             cache_mtime):
+def _check_specific_override(
+    override_name, applied_overrides, component_config, component_name, cache_mtime
+):
     override_path = devpipeline_configure.overrides.get_override_path(
-        component_config, override_name, component_name)
+        component_config, override_name, component_name
+    )
     if override_name in applied_overrides:
         if not os.path.isfile(override_path):
             # has it been removed?
@@ -73,9 +74,13 @@ def _overrides_changed(config, cache_mtime):
         applied_overrides = component_config.get_list("dp.applied_overrides")
         # see if the applied overrides have been deleted
         for override_name in override_list:
-            if _check_specific_override(override_name, applied_overrides,
-                                        component_config, component_name,
-                                        cache_mtime):
+            if _check_specific_override(
+                override_name,
+                applied_overrides,
+                component_config,
+                component_name,
+                cache_mtime,
+            ):
                 return True
     return False
 
@@ -84,7 +89,7 @@ _OUTDATED_CHECKS = [
     _raw_updated,
     _updated_software,
     _profiles_changed,
-    _overrides_changed
+    _overrides_changed,
 ]
 
 
@@ -130,7 +135,7 @@ class _CachedComponent:
         """
         return self._component.get(key, raw=raw, fallback=fallback)
 
-    def get_list(self, key, fallback=None, split=','):
+    def get_list(self, key, fallback=None, split=","):
         """
         Retrieve a value in list form.
 
@@ -211,7 +216,7 @@ class _CachedConfig:
     def write(self):
         """Write the configuration."""
         if self.dirty:
-            with open(self._cache_path, 'w') as output_file:
+            with open(self._cache_path, "w") as output_file:
                 self._config.write(output_file)
 
     def __iter__(self):
@@ -238,11 +243,12 @@ def update_cache(force=False, cache_file=None):
     if force or _is_outdated(cache_file, cache):
         cache = devpipeline_configure.config.process_config(
             cache_config.get("DEFAULT", "dp.build_config"),
-            os.path.dirname(cache_file), "build.cache",
-            profiles=cache_config.get("DEFAULT", "dp.profile_name",
-                                      fallback=None),
-            overrides=cache_config.get("DEFAULT", "dp.overrides",
-                                       fallback=None))
+            os.path.dirname(cache_file),
+            "build.cache",
+            profiles=cache_config.get("DEFAULT", "dp.profile_name", fallback=None),
+            overrides=cache_config.get("DEFAULT", "dp.overrides", fallback=None),
+        )
         devpipeline_core.sanitizer.sanitize(
-            cache, lambda n, m: print("{} [{}]".format(m, n)))
+            cache, lambda n, m: print("{} [{}]".format(m, n))
+        )
     return cache

@@ -6,14 +6,15 @@ import devpipeline_configure.modifiers
 
 
 _KEY_SUFFIXES = [
-    (re.compile(R"([\w\.\-]+)\.prepend$"),
-     devpipeline_configure.modifiers.prepend_value),
-    (re.compile(R"([\w\.\-]+)\.append$"),
-     devpipeline_configure.modifiers.append_value)
+    (
+        re.compile(r"([\w\.\-]+)\.prepend$"),
+        devpipeline_configure.modifiers.prepend_value,
+    ),
+    (re.compile(r"([\w\.\-]+)\.append$"), devpipeline_configure.modifiers.append_value),
 ]
 
-_ENV_PATTERN = re.compile(R"^env\.")
-_ENV_VARIABLE = re.compile(R"env.(\w+)")
+_ENV_PATTERN = re.compile(r"^env\.")
+_ENV_VARIABLE = re.compile(r"env.(\w+)")
 
 
 def _check_single_key(key, config):
@@ -22,12 +23,12 @@ def _check_single_key(key, config):
         match = key_suffix[0].search(key)
         if match:
             if not _ENV_PATTERN.match(key):
-                key_suffix[1](
-                    config, match.group(1), config.get(key, raw=True))
+                key_suffix[1](config, match.group(1), config.get(key, raw=True))
                 found_keys.append(key)
             else:
                 devpipeline_configure.modifiers.append_value(
-                    config, "dp.env_list", _ENV_VARIABLE.match(key).group(1))
+                    config, "dp.env_list", _ENV_VARIABLE.match(key).group(1)
+                )
     return found_keys
 
 

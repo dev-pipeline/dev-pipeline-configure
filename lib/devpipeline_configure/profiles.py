@@ -10,8 +10,7 @@ import devpipeline_configure.modifiers
 
 
 def get_profile_path(config):
-    return devpipeline_core.paths.make_path(
-        config.get("DEFAULT"), "profiles.conf")
+    return devpipeline_core.paths.make_path(config.get("DEFAULT"), "profiles.conf")
 
 
 def _read_profiles(configuration):
@@ -22,14 +21,16 @@ def _read_profiles(configuration):
 
 
 _KEY_SUFFIXES = [
-    (re.compile(R"([\w\.\-]+)\.prepend$"),
-     devpipeline_configure.modifiers.prepend_value),
-    (re.compile(R"([\w\.\-]+)\.append$"),
-     devpipeline_configure.modifiers.append_value),
-    (re.compile(R"([\w\.\-]+)\.override$"),
-     devpipeline_configure.modifiers.override_value),
-    (re.compile(R"([\w\.\-]+)\.erase$"),
-     devpipeline_configure.modifiers.erase_value)
+    (
+        re.compile(r"([\w\.\-]+)\.prepend$"),
+        devpipeline_configure.modifiers.prepend_value,
+    ),
+    (re.compile(r"([\w\.\-]+)\.append$"), devpipeline_configure.modifiers.append_value),
+    (
+        re.compile(r"([\w\.\-]+)\.override$"),
+        devpipeline_configure.modifiers.override_value,
+    ),
+    (re.compile(r"([\w\.\-]+)\.erase$"), devpipeline_configure.modifiers.erase_value),
 ]
 
 
