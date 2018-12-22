@@ -54,7 +54,8 @@ def _overrides_changed(config, cache_mtime):
         applied_overrides = component_config.get_list("dp.applied_overrides")
         # see if the applied overrides have been deleted
         for override_name in override_list:
-            override_path = devpipeline_configure.overrides.get_override_path(component_config, override_name, component_name)
+            override_path = devpipeline_configure.overrides.get_override_path(
+                component_config, override_name, component_name)
             if override_name in applied_overrides:
                 if not os.path.isfile(override_path):
                     # has it been removed?

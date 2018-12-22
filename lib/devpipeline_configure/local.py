@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import os.path
 import re
 
 import devpipeline_configure.modifiers
@@ -17,16 +16,17 @@ _ENV_PATTERN = re.compile(R"^env\.")
 _ENV_VARIABLE = re.compile(R"env.(\w+)")
 
 
-def consolidate_local_keys(config):
-    for name, config in config.items():
+def consolidate_local_keys(full_config):
+    for name, config in full_config.items():
+        del name
         del_keys = []
         for key in config:
             for key_suffix in _KEY_SUFFIXES:
-                m = key_suffix[0].search(key)
-                if m:
+                match = key_suffix[0].search(key)
+                if match:
                     if not _ENV_PATTERN.match(key):
                         key_suffix[1](
-                            config, m.group(1), config.get(key, raw=True))
+                            config, match.group(1), config.get(key, raw=True))
                         del_keys.append(key)
                     else:
                         devpipeline_configure.modifiers.append_value(

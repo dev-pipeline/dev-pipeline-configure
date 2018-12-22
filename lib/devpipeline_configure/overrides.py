@@ -22,8 +22,8 @@ def get_override_path(config, override_name, package_name):
                                             "{}.conf".format(package_name))
 
 
-def _apply_override(override_name, config):
-    for name, config in config.items():
+def _apply_override(override_name, full_config):
+    for name, config in full_config.items():
         applied_overrides = []
         override_path = get_override_path(config, override_name, name)
         if os.path.isfile(override_path):

@@ -40,9 +40,9 @@ def _apply_each_profile(profiles, profile_list, config):
             del name
             for profile_key, profile_value in profile.items():
                 for key_suffix in _KEY_SUFFIXES:
-                    m = key_suffix[0].search(profile_key)
-                    if m:
-                        key_suffix[1](component_config, m.group(1),
+                    match = key_suffix[0].search(profile_key)
+                    if match:
+                        key_suffix[1](component_config, match.group(1),
                                       profile_value)
 
 
