@@ -17,5 +17,6 @@ def read_config(path):
     path -- the loation to deserialize
     """
     parser = _make_parser()
-    parser.read(path)
-    return parser
+    if parser.read(path):
+        return parser
+    raise Exception("Failed to read {}".format(path))
