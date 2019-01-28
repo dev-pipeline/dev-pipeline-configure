@@ -123,6 +123,9 @@ class _CachedComponent:
         """Retrieve the component's name"""
         return self._component.name
 
+    def keys(self):
+        return self._component.keys()
+
     def get(self, key, raw=False, fallback=None):
         """
         Get a string value from the componnet.

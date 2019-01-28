@@ -44,24 +44,13 @@ class Configure(devpipeline_core.command.Command):
         )
         self.set_version(devpipeline_configure.version.STRING)
 
-        self.build_dir = None
-        self.config = None
-        self.overrides = None
-        self.profile = None
-
-    def setup(self, arguments):
-        self.build_dir = _choose_build_dir(arguments)
-        self.profile = arguments.profile
-        self.config = arguments.config
-        self.overrides = arguments.override
-
-    def process(self):
+    def process(self, arguments):
         config = devpipeline_configure.config.process_config(
-            self.config,
-            self.build_dir,
+            arguments.config,
+            _choose_build_dir(arguments),
             "build.cache",
-            profiles=self.profile,
-            overrides=self.overrides,
+            profiles=arguments.profile,
+            overrides=arguments.override,
         )
         devpipeline_core.sanitizer.sanitize(
             config, lambda n, m: print("{} [{}]".format(m, n))
