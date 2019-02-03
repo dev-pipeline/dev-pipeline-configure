@@ -39,11 +39,24 @@ def _updated_software(config, cache_mtime):
 
 def _profiles_changed(config, cache_mtime):
     default_config = config.get("DEFAULT")
-    if "dp.profile_name" in default_config:
-        profile_path = devpipeline_configure.profiles.get_profile_path(config)
-        if os.path.isfile(profile_path):
-            return cache_mtime < os.path.getmtime(profile_path)
-        return True
+    profile_list = default_config.get_list("dp.profile_name")
+    if profile_list:
+        if os.path.isdir(
+            devpipeline_configure.profiles.get_root_profile_path(default_config)
+        ):
+            for profile in profile_list:
+                for name, component_config in config.items():
+                    del name
+                    profile_path = devpipeline_configure.profiles.get_individual_profile_path(
+                        component_config, profile
+                    )
+                    if os.path.isfile(profile_path):
+                        if cache_mtime < os.path.getmtime(profile_path):
+                            return True
+        else:
+            profile_path = devpipeline_configure.profiles.get_profile_path(config)
+            if os.path.isfile(profile_path):
+                return cache_mtime < os.path.getmtime(profile_path)
     return False
 
 
