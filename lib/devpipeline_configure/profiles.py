@@ -50,14 +50,6 @@ def _apply_each_profile(profiles, profile_list, config):
             _apply_single_profile(component_config, profile)
 
 
-_SECTIONS = [
-    ("prepend", devpipeline_configure.modifiers.prepend_value),
-    ("append", devpipeline_configure.modifiers.append_value),
-    ("override", devpipeline_configure.modifiers.override_value),
-    ("erase", devpipeline_configure.modifiers.erase_value),
-]
-
-
 def get_root_profile_path(config):
     return devpipeline_core.paths.make_path(config, "profiles.d")
 
@@ -72,12 +64,9 @@ def _apply_individual_profile(profile_path, full_config):
     profile_config = devpipeline_configure.parser.read_config(profile_path)
     for name, component_config in full_config.items():
         del name
-        for profile_section in _SECTIONS:
-            if profile_config.has_section(profile_section[0]):
-                for profile_key, profile_value in profile_config[
-                    profile_section[0]
-                ].items():
-                    profile_section[1](component_config, profile_key, profile_value)
+        devpipeline_configure.modifiers.apply_config_modifiers(
+            profile_config, component_config
+        )
 
 
 def _apply_profiles(full_config, profile_list):

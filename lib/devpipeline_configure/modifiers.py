@@ -50,3 +50,18 @@ def erase_value(config, key, value):
 def override_value(config, key, value):
     erase_value(config, key, value)
     config[key] = value
+
+
+_CONFIG_SECTIONS = [
+    ("prepend", prepend_value),
+    ("append", append_value),
+    ("override", override_value),
+    ("erase", erase_value),
+]
+
+
+def apply_config_modifiers(modifier_config, component_config):
+    for modifier_section in _CONFIG_SECTIONS:
+        if modifier_config.has_section(modifier_section[0]):
+            for key, value in modifier_config[modifier_section[0]].items():
+                modifier_section[1](component_config, key, value)
