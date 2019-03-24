@@ -15,7 +15,8 @@ setup(
     install_requires=["dev-pipeline-core >= {}".format(_VERSION)],
     entry_points={
         "devpipeline.drivers": [
-            "configure = devpipeline_configure.configure:_CONFIGURE_COMMAND"
+            "configure = devpipeline_configure.configure:_CONFIGURE_COMMAND",
+            "reconfigure = devpipeline_configure.reconfigure:_RECONFIGURE_COMMAND",
         ]
     },
     author="Stephen Newell",

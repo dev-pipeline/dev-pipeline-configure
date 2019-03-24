@@ -12,7 +12,7 @@ import devpipeline_configure.parser
 import devpipeline_configure.profiles
 
 
-def _find_config():
+def find_config():
     """Find a build cache somewhere in a parent directory."""
     previous = ""
     current = os.getcwd()
@@ -125,7 +125,7 @@ def update_cache(force=False, cache_file=None):
              been modified.
     """
     if not cache_file:
-        cache_file = _find_config()
+        cache_file = find_config()
     cache_config = devpipeline_configure.parser.read_config(cache_file)
     cache = devpipeline_configure.cache._CachedConfig(cache_config, cache_file)
     if force or _is_outdated(cache_file, cache):
