@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This modules configures the build system - build cache, etc...."""
 
+import argparse
 import os.path
 
 import devpipeline_core.command
@@ -38,9 +39,15 @@ class Reconfigure(devpipeline_core.command.Command):
             description="Reconfigure a project, optionally with additional "
             "parameters",
         )
-        self.add_argument("--profiles", help="Comma-separated list of profiles to use.")
         self.add_argument(
-            "--overrides", help="Comma-separated list of overrides to use."
+            "--profiles",
+            help="Comma-separated list of profiles to use.",
+            default=argparse.SUPPRESS,
+        )
+        self.add_argument(
+            "--overrides",
+            help="Comma-separated list of overrides to use.",
+            default=argparse.SUPPRESS,
         )
         self.add_argument(
             "--append",
