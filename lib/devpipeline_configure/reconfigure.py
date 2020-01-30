@@ -72,6 +72,7 @@ class Reconfigure(devpipeline_core.command.Command):
             "build.cache",
             profiles=profiles or None,
             overrides=overrides or None,
+            src_root=cache_config.get("DEFAULT", "dp.src_root"),
         )
         devpipeline_core.sanitizer.sanitize(
             cache, lambda n, m: print("{} [{}]".format(m, n))

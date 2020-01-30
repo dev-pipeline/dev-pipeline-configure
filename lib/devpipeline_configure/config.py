@@ -99,9 +99,16 @@ def _set_list(config, kwargs_key, config_key, **kwargs):
         config["DEFAULT"][config_key] = values
 
 
+def _override_src_root(config, **kwargs):
+    value = kwargs.get("src_root")
+    if value:
+        config["DEFAULT"]["dp.src_root"] = value
+
+
 _CONFIG_MODIFIERS = [
     lambda config, **kwargs: _set_list(config, "profiles", "dp.profile_name", **kwargs),
     lambda config, **kwargs: _set_list(config, "overrides", "dp.overrides", **kwargs),
+    _override_src_root,
 ]
 
 _COMPONENT_MODIFIERS = devpipeline_core.plugin.query_plugins(
