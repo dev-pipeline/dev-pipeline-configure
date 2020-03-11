@@ -135,6 +135,7 @@ def update_cache(force=False, cache_file=None):
             "build.cache",
             profiles=cache_config.get("DEFAULT", "dp.profile_name", fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides", fallback=None),
+            src_root=cache_config.get("DEFAULT", "dp.src_root"),
         )
         devpipeline_core.sanitizer.sanitize(
             cache, lambda n, m: print("{} [{}]".format(m, n))
