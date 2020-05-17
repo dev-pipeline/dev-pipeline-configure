@@ -90,7 +90,7 @@ def _create_cache(raw_path, cache_dir, cache_file):
 def _write_config(config, cache_dir):
     if not os.path.isdir(cache_dir):
         os.makedirs(cache_dir)
-    config.write()
+    config.write(force=True)
 
 
 def _set_list(config, kwargs_key, config_key, **kwargs):

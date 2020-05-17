@@ -118,9 +118,9 @@ class _CachedConfig:
         """Get a specific component to operate on"""
         return _CachedComponent(self._config[component], self)
 
-    def write(self):
+    def write(self, force=False):
         """Write the configuration."""
-        if self.dirty:
+        if self.dirty or force:
             with open(self._cache_path, "w") as output_file:
                 self._config.write(output_file)
 
